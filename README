@@ -1,0 +1,134 @@
+* Overview
+
+This collection of shamefully scrappy scripts do two main things:
+
+1. Run different SSH agents for different keys, so that a compromised agent
+   has only limited use (eg: root on client A's hosts can't use it access
+   client B's hosts).
+
+2. Require ssh-agent to prompt for confirmation before it uses a key, so that
+   a compromised agent stands less chance of being exploited (if the user
+   is away or declines the request then nothing happens).
+
+The scripts are hopefully Bourne-shell pure, although it's possible some
+BASH-isms might've crept in. The Growl and the playsound bits are OS X shaped.
+
+There's doubtless room for improvement here. This grew over time to scratch
+successive itches, and trades grace and style for getting stuff done!
+
+* Operation
+
+Shells source ssh-agent-env.rc in their profile. This defines two functions:
+
+1. load_agent_env
+
+  For a named key, this will either create a new agent for it, loading the
+  key as it goes, or merely recover the environment of an existing agent. 
+
+  The create/load work is pushed to a script, create-ssh-agent-for-key.sh
+
+2. kill_agent
+
+  Kills the agent of a named key
+
+  It also defines two shell aliases, la for load_agent_env, and xsh for
+  ssh-with-lookup.rb. More on that later.
+
+The main scripts are:
+
+1. create-ssh-agent-for-key.sh
+
+  This script goes off to look for a SSH key whose path is derived from its
+  name.  For me, this is /Volumes/key/ssh/id_dsa-${KEYNAME}.
+   
+  It then creates a new SSH agent and stores its environment details in a
+  dotfile specific to this key, ~/.ssh-agent-${KEYNAME}.
+
+  Whilst doing so it uses the ${SSH_ASKPASS} variable to indicate to ssh-agent
+  that it should run this variable's command before passing a key's deatils
+  along. Keys that want such behaviour are then loaded into the agent with
+  ssh-add -c.
+
+2. ssh-askpass.sh
+
+  This is the program run by ssh-agent when it's asked to provide a key. It
+  alerts the user to an incoming agent request and waits for confirmation.
+
+  To decouple the user interaction from the SSH process it compares two files'
+  timestamps: one from when the request came in, and one updated by the
+  out-of-band confirmation process.
+
+  It plays an annoying sound at intervals to alert the user to the request, and
+  they can decide whether or not they were expecting the request.
+
+3. ssh-agent-auth.sh
+
+  This is other side of the confirmation process. The script merely update the
+  timestamp of one of the files ssh-askpass.sh is looking at. Typically it's run
+  by a keyboard shortcut. (Hello FastScripts)
+
+4. ssh-decline.sh
+
+  This script drops a file marker to indicate to ssh-askpass.sh that its should
+  not agree to the agent request. Again, can be run from a keyboard shortcut.
+
+5. ssh-with-lookup.rb
+
+  This script wrappers a SSH invocation, setting up the necessary environment
+  for the key's agent and providing a mechanism to fully qualify a hostname
+  based on defaults and overrides.
+
+6. clear-agent.sh
+
+  Removes the dotfiles relating to managed agents and any timestamp files. It
+  doesn't actually kill the agents. It probably should.
+
+7. ssh-growl.rb
+
+  Trivial Growl wrapper for ssh-askpass.sh to use to produce Growl notifications.
+
+8. ssh-defeat.sh
+
+  Drop off a marker file that disables confirmation prompting for a given key.
+
+Binaries:
+
+1. playsound
+
+  Simple WAV file player from <http://www.steike.com/code/playsound/>
+
+2. fastblip.wav
+
+  Some bleeps!
+
+* Example
+
+Quick demo to unabstractificate this stuff:
+
+1. Create a new agent for the lemon-zomo key via load_agent_env's shorter alias,
+   'la'
+
+  $ la lemon-zomo
+  No agent loaded for lemon-zomo
+  Agent pid 23919
+  Enter passphrase for /Volumes/key/ssh/id_dsa-lemon-zomo: 
+  Identity added: /Volumes/key/ssh/id_dsa-lemon-zomo (/Volumes/key/ssh/id_dsa-lemon-zomo)
+  The user has to confirm each use of the key
+  Agent pid 23919
+
+
+2. Now use xsh alias (for ssh-with-lookup.rb) to logon to a host
+
+  $ xsh hq.zomo
+  ssh -l lemon hq.zomo.co.uk 
+  Last login: Wed Aug 11 13:12:33 2010 from somewhere.example.com
+
+Various things now happen:
+
+  . ssh-with-lookup.rb recovered the agent details
+  . it appended the zomo.co.uk domain and user account switch and invoked ssh
+  . the agent was asked to key the connection
+  . the agent ran ssh-askpass.sh 
+  . ssh-askpass.sh didn't exit until I confirmed it
+  . which I did by pressing a keyboard shortcut that ran ssh-agent-auth.sh
+  

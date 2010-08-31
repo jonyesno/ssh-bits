@@ -1,0 +1,10 @@
+zomo:
+    # defaults apply to *.zomo
+    default:
+        options: -l lemon
+        key: lemon-zomo
+        host-suffix: .zomo.co.uk
+    # jib.zomo connects with a different user
+    jib:
+        options: -l jib
+        host: zap.zomo.co.uk

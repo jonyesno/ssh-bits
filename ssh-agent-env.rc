@@ -1,0 +1,38 @@
+# load_agent_env will either create a new agent for a named key
+# or recover the existing agent if it exists
+# the agent's details live in ~/.ssh-agent-$keyname
+load_agent_env() {
+	if [ -z "$1" ] ; then
+		echo Usage: load_agent_env keyname
+		return
+	fi
+	
+	KEY=$1
+	FILE=${HOME}/.ssh-agent-${KEY}
+	if  [ ! -f ${FILE} ] ; then
+		echo No agent loaded for ${KEY}
+		${HOME}/bin/create-ssh-agent-for-key.sh ${KEY} && . ${FILE}
+		return
+	fi
+		
+	echo Loading agent for ${KEY}
+	. ${FILE}
+}
+
+# kill_agent kills the agent for a named key
+kill_agent() {
+	if [ -z "$1" ] ; then
+		echo Usage: kill_agent keyname
+		return
+	fi
+
+	KEY=$1
+	FILE=${HOME}/.ssh-agent-${KEY}
+
+	. ${FILE}
+	kill ${SSH_AGENT_PID}
+	rm ${FILE}
+}
+
+alias la=load_agent_env
+alias xsh='ssh-with-lookup.rb'
