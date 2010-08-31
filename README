@@ -61,6 +61,9 @@ The main scripts are:
   It plays an annoying sound at intervals to alert the user to the request, and
   they can decide whether or not they were expecting the request.
 
+  The script exits zero to indicate confirmation, or non-zero to decline the
+  request.
+
 3. ssh-agent-auth.sh
 
   This is other side of the confirmation process. The script merely update the
