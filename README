@@ -94,6 +94,11 @@ The main scripts are:
 
   Drop off a marker file that disables confirmation prompting for a given key.
 
+9. ssh-agent-lock.rb
+
+  Not part of this stuff, but a proof-of-concept agent lock/unlock script.
+  See inside for more details.
+
 Binaries:
 
 1. playsound
@@ -108,19 +113,36 @@ Binaries:
 
 Quick demo to unabstractificate this stuff:
 
-1. Create a new agent for the lemon-zomo key via load_agent_env's shorter alias,
-   'la'
+1. Create a new agent for the lemon-zomo key:
 
-  $ la lemon-zomo
+  $ load_agent_env lemon-zomo
   No agent loaded for lemon-zomo
   Agent pid 23919
   Enter passphrase for /Volumes/key/ssh/id_dsa-lemon-zomo: 
   Identity added: /Volumes/key/ssh/id_dsa-lemon-zomo (/Volumes/key/ssh/id_dsa-lemon-zomo)
   The user has to confirm each use of the key
   Agent pid 23919
+  
+  $ ssh-add -l
+  1024 5d:b9:a6:ca:00:01:f2:f4:93:18:83:da:85:b2:a1:7e /Volumes/key/ssh/id_dsa-lemon-zomo (DSA)
+  
+2. Create another agent for another key, using the shell alias la:
 
+  $ la 732
+  No agent loaded for 732
+  Agent pid 25129
+  Enter passphrase for /Volumes/key/ssh/id_dsa-732: 
+  Identity added: /Volumes/key/ssh/id_dsa-732 (/Volumes/key/ssh/id_dsa-732)
+  The user has to confirm each use of the key
+  Agent pid 25129
 
-2. Now use xsh alias (for ssh-with-lookup.rb) to logon to a host
+  $ ssh-add -l
+  1024 1a:6b:2b:28:9b:fd:59:d8:61:af:9e:0e:18:db:02:2e /Volumes/key/ssh/id_dsa-732 (DSA)
+
+3. In a new shell, use ssh-with-lookup.rb, via xsh shell alias, to SSH somewhere:
+
+  $ ssh-add -l
+  The agent has no identities. # This is OS X's default agent
 
   $ xsh hq.zomo
   ssh -l lemon hq.zomo.co.uk 
@@ -135,3 +157,8 @@ Various things now happen:
   . ssh-askpass.sh didn't exit until I confirmed it
   . which I did by pressing a keyboard shortcut that ran ssh-agent-auth.sh
   
+* Disclaimer and warranty
+
+As suggested this is all quick and dirty hacks. No claims made about its
+fitness for use, no warranty or anything like that. It may indeed eat children
+and melt ice caps. Good luck.
