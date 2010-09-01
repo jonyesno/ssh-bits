@@ -7,7 +7,7 @@ STAMP_DIR=${HOME}/tmp
 ME=${STAMP_DIR}/ssh-askpass-$$
 IT=${STAMP_DIR}/ssh-agent-auth
 WAV=${HOME}/etc/fastblip1.wav
-FN=${_SSH_KEY##*/}
+FN=${_SSH_KEYFILE##*/}
 
 # mark the arrival time of the confirmation request
 # we compare the mtime of this file against and adjacent
