@@ -3,10 +3,12 @@ require 'yaml'
 
 SERVERS = YAML::load_file(File.join(ENV['HOME'], "/etc/ssh-with-lookup.yml"))
 
-host, key = ARGV.shift.split('.')
-rest      = ARGV.join(' ')
+target    = ARGV.shift
+raise ArgumentError, "usage: ssh-with-lookup.rb <host>.<key> [ssh params ... ]" if target.nil?
 
-raise ArgumentError, "usage: ssh-with-lookup.rb <host>.<key> [ssh params ... ]" if key.nil? || host.nil?
+host, key = target.split('.')
+rest      = ARGV.join(' ')
+raise ArgumentError, "usage: ssh-with-lookup.rb <host>.<key> [ssh params ... ]" if host.nil? || key.nil?
 raise ArgumentError, "unknown key" unless SERVERS.has_key?(key)
 
 # grab the default config for this key
