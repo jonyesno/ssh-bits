@@ -4,7 +4,8 @@ if [ -z $1 ] ; then echo usage: create-agent-for-key keyname ; exit 1 ; fi
 
 # /Volumes/key is a cryptofs mount
 KEYSTORE=/Volumes/key/ssh
-KEYFILE=${KEYSTORE}/id_dsa-$1
+KEYFILE=(${KEYSTORE}/id_???-$1)
+echo $KEYFILE
 FILE=${HOME}/.ssh-agent-$1
 
 if [ ! -f ${KEYFILE} ] ; then echo no key at ${KEYFILE} ; exit 1; fi
