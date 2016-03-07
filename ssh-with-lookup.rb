@@ -6,8 +6,9 @@ SERVERS = YAML::load_file(File.join(ENV['HOME'], "/etc/ssh-with-lookup.yml"))
 target    = ARGV.shift
 raise ArgumentError, "usage: ssh-with-lookup.rb <host>.<key> [ssh params ... ]" if target.nil?
 
-host, key = target.split('.')
-rest      = ARGV.join(' ')
+*host, key = target.split('.')
+rest       = ARGV.join(' ')
+host       = host.join('.')
 raise ArgumentError, "usage: ssh-with-lookup.rb <host>.<key> [ssh params ... ]" if host.nil? || key.nil?
 raise ArgumentError, "unknown key" unless SERVERS.has_key?(key)
 
@@ -38,6 +39,25 @@ File.open(agentenv, 'r') do |f|
 end
 
 # do it
-cmd = "ssh #{conf['options']} #{conf['host']} #{rest}" 
+case
+when $0.match(/ssh/)
+  cmd = "ssh #{conf['options']} #{conf['host']} #{rest}"
+when $0.match(/scp/)
+  opts = conf['options']
+  user = opts[/-l \w+/]
+  if user
+    opts.gsub!(/#{user}/, '')
+    user = user[/\w+$/] + '@'
+  else
+    user = ''
+  end
+  opts.gsub!(/-A/, '')
+  opts.gsub!(/-p/, '-P')
+  rest.gsub!(/:/, "#{user}#{conf['host']}:")
+  cmd = "scp #{opts} #{rest}"
+end
+
+ENV['SSH_ASKPASS'] = ENV['HOME'] + '/bin/ssh-askpass.sh'
+# ENV.each { |k,v| puts "#{k} -> #{v}" }
 puts cmd
 exec cmd
