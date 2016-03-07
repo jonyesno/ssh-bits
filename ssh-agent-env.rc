@@ -36,3 +36,4 @@ kill_agent() {
 
 alias la=load_agent_env
 alias xsh='ssh-with-lookup.rb'
+alias xcp='scp-with-lookup.rb'
