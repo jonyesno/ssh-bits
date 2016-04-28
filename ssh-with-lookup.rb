@@ -42,6 +42,7 @@ end
 case
 when $0.match(/ssh/)
   cmd = "ssh #{conf['options']} #{conf['host']} #{rest}"
+  system("tmux rename-window #{host}")
 when $0.match(/scp/)
   opts = conf['options']
   user = opts[/-l \w+/]
