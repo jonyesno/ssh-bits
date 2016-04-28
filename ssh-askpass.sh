@@ -6,7 +6,6 @@
 STAMP_DIR=${HOME}/tmp
 ME=${STAMP_DIR}/ssh-askpass-$$
 IT=${STAMP_DIR}/ssh-agent-auth
-WAV=${HOME}/etc/fastblip1.wav
 if [ -z "${_SSH_KEYFILE}" ] ; then
   FN=$( echo $* | awk '{print $NF;}' )
 else
@@ -29,20 +28,19 @@ START=$(date +%s)
 touch ${ME}
 
 # syslog and growl the incoming request from ssh-agent
-# logger -t info "ssh-askpass ${FN}"
 trace $FN
-# ${HOME}/bin/ssh-growl.rb ${FN} &
 
 # check to see if global or key-specific override markers exist
 if [ -f ${HOME}/tmp/ssh-askpass-defeat ] || \
    [ -f ${HOME}/tmp/ssh-askpass-defeat-${FN} ] ; then
 # terminal-notifier -title SSH -subtitle "Automatic use of ssh-agent" -group ssh-askpass -message ${FN} -sound Tink
+  rm -f ${ME}
   exit 0
 fi
 
 # loop over a sleep whilst waiting to see if the 'other' file
 # has been updated
-terminal-notifier -title SSH -subtitle "Allow use of ssh-agent?" -group ssh-askpass -message ${FN} -sound Tink -execute ${HOME}/bin/ssh-agent-auth.sh
+reattach-to-user-namespace terminal-notifier -title SSH -subtitle "Allow use of ssh-agent?" -group ssh-askpass -message ${FN} -sound Tink -execute ${HOME}/bin/ssh-agent-auth.sh
 while [ ${ME} -nt ${IT} ] ; do
   sleep 0.5
   NOW=$(date +%s)
@@ -62,7 +60,7 @@ done
 # ${HOME}/bin/ssh-growl.rb confirmed &
 rm -f ${ME}
 
-terminal-notifier -remove ALL >> ${LOG} 2>&1
+reattach-to-user-namespace terminal-notifier -remove ALL >> ${LOG} 2>&1
 trace "done"
 
 exit 0
