@@ -52,6 +52,7 @@ while [ ${ME} -nt ${IT} ] ; do
   # decline the request if told to
   if [ -f ${HOME}/tmp/ssh-askpass-decline ] ; then
     rm ${HOME}/tmp/ssh-askpass-decline
+    trace "decline"
     exit 1
   fi
 done
@@ -61,6 +62,6 @@ done
 rm -f ${ME}
 
 reattach-to-user-namespace terminal-notifier -remove ALL >> ${LOG} 2>&1
-trace "done"
+trace "accept"
 
 exit 0
