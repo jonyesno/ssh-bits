@@ -41,6 +41,9 @@ end
 # do it
 case
 when $0.match(/ssh/)
+  if rest.match(/-l\s*\w+/) && conf['options'].match(/-l\s*\w+/)
+    conf['options'].gsub!(/-l\s*\w+/, '')
+  end
   cmd = "ssh #{conf['options']} #{conf['host']} #{rest}"
   system("tmux rename-window #{host}") if ENV.has_key?('TMUX')
 when $0.match(/scp/)
