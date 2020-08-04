@@ -10,9 +10,12 @@ This collection of shamefully scrappy scripts do two main things:
    a compromised agent stands less chance of being exploited (if the user
    is away or declines the request then nothing happens).
 
-The scripts are hopefully Bourne-shell pure, although it's possible some
-BASH-isms might've crept in. `terminal-notifier` is a macOS notification
-tool.
+The scripts are mostly Bourne-shell pure, although it's possible some
+BASH-isms might've crept in.
+
+`terminal-notifier` create macOS notifications. `reattach-to-user-namespace`
+is a macOS session process tool. Both are available through
+[Homebrew](https://brew.sh/)
 
 There's doubtless room for improvement here. This grew over time to scratch
 successive itches, and trades grace and style for getting stuff done!
