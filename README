@@ -11,7 +11,8 @@ This collection of shamefully scrappy scripts do two main things:
    is away or declines the request then nothing happens).
 
 The scripts are hopefully Bourne-shell pure, although it's possible some
-BASH-isms might've crept in. The Growl and the playsound bits are OS X shaped.
+BASH-isms might've crept in. `terminal-notifier` is a macOS notification
+tool.
 
 There's doubtless room for improvement here. This grew over time to scratch
 successive itches, and trades grace and style for getting stuff done!
@@ -58,9 +59,6 @@ The main scripts are:
   timestamps: one from when the request came in, and one updated by the
   out-of-band confirmation process.
 
-  It plays an annoying sound at intervals to alert the user to the request, and
-  they can decide whether or not they were expecting the request.
-
   The script exits zero to indicate confirmation, or non-zero to decline the
   request.
 
@@ -68,7 +66,7 @@ The main scripts are:
 
   This is other side of the confirmation process. The script merely update the
   timestamp of one of the files ssh-askpass.sh is looking at. Typically it's run
-  by a keyboard shortcut. (Hello FastScripts)
+  by a keyboard shortcut.
 
 4. ssh-decline.sh
 
@@ -86,28 +84,14 @@ The main scripts are:
   Removes the dotfiles relating to managed agents and any timestamp files. It
   doesn't actually kill the agents. It probably should.
 
-7. ssh-growl.rb
-
-  Trivial Growl wrapper for ssh-askpass.sh to use to produce Growl notifications.
-
-8. ssh-defeat.sh
+7. ssh-defeat.sh
 
   Drop off a marker file that disables confirmation prompting for a given key.
 
-9. ssh-agent-lock.rb
+8. ssh-agent-lock.rb
 
   Not part of this stuff, but a proof-of-concept agent lock/unlock script.
   See inside for more details.
-
-Binaries:
-
-1. playsound
-
-  Simple WAV file player from <http://www.steike.com/code/playsound/>
-
-2. fastblip.wav
-
-  Some bleeps!
 
 * Example
 

@@ -27,7 +27,6 @@ mkdir -p ${STAMP_DIR}
 START=$(date +%s)
 touch ${ME}
 
-# syslog and growl the incoming request from ssh-agent
 trace $FN
 
 # check to see if global or key-specific override markers exist
@@ -58,8 +57,6 @@ while [ ${ME} -nt ${IT} ] ; do
   fi
 done
 
-# growl success
-# ${HOME}/bin/ssh-growl.rb confirmed &
 rm -f ${ME}
 
 reattach-to-user-namespace terminal-notifier -remove ALL >/dev/null 2>&1
