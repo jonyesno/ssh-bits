@@ -15,13 +15,12 @@ raise ArgumentError, "unknown key" unless SERVERS.has_key?(key)
 # grab the default config for this key
 conf = SERVERS[key]['default']
 
-# if there's a specific host entry, override from tat
+# if there's a specific host entry, override from that
 if SERVERS[key].has_key?(host)
   conf.merge!(SERVERS[key][host])
 elsif conf.has_key?('host-suffix') # for defaulting hosts, append the key-wide host suffix if supplied
   conf['host'] = host + conf['host-suffix']
 end
-
 raise ArgumentError, "unknown host" unless conf.has_key?('host')
 
 # discover the file containing the ssh-agent details we want
@@ -62,6 +61,5 @@ when $0.match(/scp/)
 end
 
 ENV['SSH_ASKPASS'] = ENV['HOME'] + '/bin/ssh-askpass.sh'
-# ENV.each { |k,v| puts "#{k} -> #{v}" }
 puts cmd
 exec cmd
