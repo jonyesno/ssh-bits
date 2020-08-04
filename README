@@ -42,7 +42,7 @@ The main scripts are:
   name.  For me, this is /Volumes/key/ssh/id_dsa-${KEYNAME}.
    
   It then creates a new SSH agent and stores its environment details in a
-  dotfile specific to this key, ~/.ssh-agent-${KEYNAME}.
+  dotfile specific to this key, ~/.ssh/.ssh-agent-${KEYNAME}.
 
   Whilst doing so it uses the ${SSH_ASKPASS} variable to indicate to ssh-agent
   that it should run this variable's command before passing a key's deatils

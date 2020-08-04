@@ -1,3 +1,3 @@
 #!/bin/sh
-rm -f ~/.ssh-agent-*
+rm -f ~/.ssh/.ssh-agent-*
 rm -f ~/tmp/ssh-*

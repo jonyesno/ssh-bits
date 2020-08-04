@@ -6,7 +6,7 @@ if [ -z $1 ] ; then echo usage: create-agent-for-key keyname ; exit 1 ; fi
 KEYSTORE=/Volumes/key/ssh
 KEYFILE=(${KEYSTORE}/id_???-$1)
 echo $KEYFILE
-FILE=${HOME}/.ssh-agent-$1
+FILE=${HOME}/.ssh/.ssh-agent-$1
 
 if [ ! -f ${KEYFILE} ] ; then echo no key at ${KEYFILE} ; exit 1; fi
 

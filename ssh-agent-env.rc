@@ -1,6 +1,6 @@
 # load_agent_env will either create a new agent for a named key
 # or recover the existing agent if it exists
-# the agent's details live in ~/.ssh-agent-$keyname
+# the agent's details live in ~/.ssh/.ssh-agent-$keyname
 load_agent_env() {
 	if [ -z "$1" ] ; then
 		echo Usage: load_agent_env keyname
@@ -8,7 +8,7 @@ load_agent_env() {
 	fi
 	
 	KEY=$1
-	FILE=${HOME}/.ssh-agent-${KEY}
+	FILE=${HOME}/.ssh/.ssh-agent-${KEY}
 	if  [ ! -f ${FILE} ] ; then
 		echo No agent loaded for ${KEY}
 		${HOME}/bin/create-ssh-agent-for-key.sh ${KEY} && . ${FILE}
@@ -27,7 +27,7 @@ kill_agent() {
 	fi
 
 	KEY=$1
-	FILE=${HOME}/.ssh-agent-${KEY}
+	FILE=${HOME}/.ssh/.ssh-agent-${KEY}
 
 	. ${FILE}
 	kill ${SSH_AGENT_PID}

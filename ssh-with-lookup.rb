@@ -24,7 +24,7 @@ end
 raise ArgumentError, "unknown host" unless conf.has_key?('host')
 
 # discover the file containing the ssh-agent details we want
-agentenv = ENV['HOME'] + "/.ssh-agent-#{conf['key']}"
+agentenv = ENV['HOME'] + "/.ssh/.ssh-agent-#{conf['key']}"
 raise RuntimeError, "no agent config found at #{agentenv}" unless File.exists?(agentenv)
 
 # set this processes environment from the file's contents
