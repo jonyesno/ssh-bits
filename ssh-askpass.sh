@@ -33,14 +33,15 @@ trace $FN
 # check to see if global or key-specific override markers exist
 if [ -f ${HOME}/tmp/ssh-askpass-defeat ] || \
    [ -f ${HOME}/tmp/ssh-askpass-defeat-${FN} ] ; then
-# terminal-notifier -title SSH -subtitle "Automatic use of ssh-agent" -group ssh-askpass -message ${FN} -sound Tink
+  reattach-to-user-namespace terminal-notifier -title SSH -subtitle "Automatic use of ssh-agent" -group ssh-askpass -message ${FN} >/dev/null 2>&1
+  trace "not asking for confirmation owing to defeat file"
   rm -f ${ME}
   exit 0
 fi
 
 # loop over a sleep whilst waiting to see if the 'other' file
 # has been updated
-reattach-to-user-namespace terminal-notifier -title SSH -subtitle "Allow use of ssh-agent?" -group ssh-askpass -message ${FN} -sound Tink -execute ${HOME}/bin/ssh-agent-auth.sh
+reattach-to-user-namespace terminal-notifier -title SSH -subtitle "Allow use of ssh-agent?" -group ssh-askpass -message ${FN} -sound Tink -execute ${HOME}/bin/ssh-agent-auth.sh >/dev/null 2>&1
 while [ ${ME} -nt ${IT} ] ; do
   sleep 0.5
   NOW=$(date +%s)
@@ -61,7 +62,7 @@ done
 # ${HOME}/bin/ssh-growl.rb confirmed &
 rm -f ${ME}
 
-reattach-to-user-namespace terminal-notifier -remove ALL >> ${LOG} 2>&1
+reattach-to-user-namespace terminal-notifier -remove ALL >/dev/null 2>&1
 trace "accept"
 
 exit 0
