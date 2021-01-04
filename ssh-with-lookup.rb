@@ -44,7 +44,7 @@ when $0.match(/ssh/)
     conf['options'].gsub!(/-l\s*\w+/, '')
   end
   cmd = "ssh #{conf['options']} #{conf['host']} #{rest}"
-  system("tmux rename-window #{host}") if ENV.has_key?('TMUX')
+  system("tmux rename-window -t #{ENV['TMUX_PANE']} #{host}") if ENV.has_key?('TMUX')
 when $0.match(/scp/)
   opts = conf['options']
   user = opts[/-l \w+/]
