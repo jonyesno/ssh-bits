@@ -1,39 +1,62 @@
 # load_agent_env will either create a new agent for a named key
 # or recover the existing agent if it exists
 # the agent's details live in ~/.ssh/.ssh-agent-$keyname
+
+new_agent() {
+    if [ -z "$1" ] ; then
+        echo "Usage: new_agent keyname"
+        return
+    fi
+
+    local KEY=$1
+    local FILE=${HOME}/.ssh/.ssh-agent-${KEY}
+    ${HOME}/bin/create-ssh-agent-for-key.sh ${KEY} && . ${FILE}
+}
+
 load_agent_env() {
-	if [ -z "$1" ] ; then
-		echo Usage: load_agent_env keyname
-		return
-	fi
-	
-	KEY=$1
-	FILE=${HOME}/.ssh/.ssh-agent-${KEY}
-	if  [ ! -f ${FILE} ] ; then
-		echo No agent loaded for ${KEY}
-		${HOME}/bin/create-ssh-agent-for-key.sh ${KEY} && . ${FILE}
-		return
-	fi
-		
-	echo Loading agent for ${KEY}
-	. ${FILE}
+    if [ -z "$1" ] ; then
+        echo "Usage: load_agent_env keyname"
+        return
+    fi
+
+    local KEY=$1
+    local FILE=${HOME}/.ssh/.ssh-agent-${KEY}
+
+    if [ -f ${FILE} ] ; then
+        echo "found ${FILE} for ${KEY}, loading"
+        . ${FILE}
+        if ! ps -p ${SSH_AGENT_PID} > /dev/null 2>&1 ; then
+            echo "Stale agent details for ${KEY}, creating new one"
+            new_agent ${KEY}
+        fi
+    else
+        echo "No agent details found for ${KEY}, creating new one"
+        new_agent ${KEY}
+    fi
 }
 
 # kill_agent kills the agent for a named key
 kill_agent() {
-	if [ -z "$1" ] ; then
-		echo Usage: kill_agent keyname
-		return
-	fi
+    if [ -z "$1" ] ; then
+        echo "Usage: kill_agent keyname"
+        return
+    fi
 
-	KEY=$1
-	FILE=${HOME}/.ssh/.ssh-agent-${KEY}
+    local KEY=$1
+    local FILE=${HOME}/.ssh/.ssh-agent-${KEY}
 
-	. ${FILE}
-	kill ${SSH_AGENT_PID}
-	rm ${FILE}
+    if [ -f ${FILE} ] ; then
+        echo "Found ${FILE} for ${KEY}, cleaning up"
+        . ${FILE}
+        kill ${SSH_AGENT_PID}
+        rm ${FILE}
+    else
+        echo "No agent details found for ${KEY}"
+    fi
 }
 
 alias la=load_agent_env
 alias xsh='ssh-with-lookup.rb'
 alias xcp='scp-with-lookup.rb'
+
+# vim: ft=sh
