@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-if [ -z $1 ] ; then echo usage: create-agent-for-key keyname ; exit 1 ; fi
+if [ -z $1 ] ; then echo "usage: create-agent-for-key keyname" ; exit 1 ; fi
 
 # /Volumes/key is a cryptofs mount
 KEYSTORE=/Volumes/key/ssh
@@ -8,7 +8,7 @@ KEYFILE=(${KEYSTORE}/id_???-$1)
 echo $KEYFILE
 FILE=${HOME}/.ssh/.ssh-agent-$1
 
-if [ ! -f ${KEYFILE} ] ; then echo no key at ${KEYFILE} ; exit 1; fi
+if [ ! -f ${KEYFILE} ] ; then echo "no key at ${KEYFILE}" ; exit 1; fi
 
 # By setting SSH_ASKPASS we provde ssh-agent with a program to run before
 # it forwards a key onwards
