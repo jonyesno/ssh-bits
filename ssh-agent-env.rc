@@ -25,7 +25,7 @@ load_agent_env() {
     if [ -f ${FILE} ] ; then
         echo "found ${FILE} for ${KEY}, loading"
         . ${FILE}
-        if ! ps -p ${SSH_AGENT_PID} > /dev/null 2>&1 ; then
+        if ! ps -p ${SSH_AGENT_PID} 2>/dev/null | grep -q ssh-agent ; then
             echo "Stale agent details for ${KEY}, creating new one"
             new_agent ${KEY}
         fi
