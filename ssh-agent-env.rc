@@ -20,19 +20,46 @@ load_agent_env() {
     fi
 
     local KEY=$1
+
+    test_agent_env ${KEY}
+    local _what=$?
+
+    if [ ${_what} -eq 1 ] ; then
+        # no agent - create, load keys
+        new_agent $1
+        ${HOME}/bin/load-key.sh ${KEY}
+    elif [ ${_what} -eq 2 ] ; then
+        # agent exists but no keys
+        ${HOME}/bin/load-key.sh ${KEY}
+    fi
+
+}
+
+test_agent_env() {
+    if [ -z "$1" ] ; then
+        echo "Usage: test_agent_env keyname"
+        return
+    fi
+
+    local KEY=$1
     local FILE=${HOME}/.ssh/.ssh-agent-${KEY}
 
     if [ -f ${FILE} ] ; then
         echo "found ${FILE} for ${KEY}, loading"
         . ${FILE}
         if ! ps -p ${SSH_AGENT_PID} 2>/dev/null | grep -q ssh-agent ; then
-            echo "Stale agent details for ${KEY}, creating new one"
-            new_agent ${KEY}
+            echo "Stale agent details for ${KEY}"
+            return 1
+        fi
+        if ! ssh-add -l ; then
+            echo "No keys loaded for ${KEY}"
+            return 2
         fi
     else
-        echo "No agent details found for ${KEY}, creating new one"
-        new_agent ${KEY}
+        echo "No agent details found for ${KEY}"
+        return 1
     fi
+    return 0
 }
 
 # kill_agent kills the agent for a named key

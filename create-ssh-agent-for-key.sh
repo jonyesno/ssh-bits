@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-if [ -z $1 ] ; then echo "usage: create-agent-for-key keyname" ; exit 1 ; fi
+if [ -z $1 ] ; then echo "usage: create-ssh-agent-for-key keyname" ; exit 1 ; fi
 
 # /Volumes/key is a cryptofs mount
 KEYSTORE=/Volumes/key/ssh
@@ -17,6 +17,3 @@ if [ ! -f ${KEYFILE} ] ; then echo "no key at ${KEYFILE}" ; exit 1; fi
 # ${DISPLAY} is null'd since we're expected to provide a X11 client, not a script
 _SSH_KEYFILE=${KEYFILE} SSH_ASKPASS=${HOME}/bin/ssh-askpass.sh DISPLAY=dummy ssh-agent > ${FILE}
 . ${FILE}
-
-# Add the named key to the agent, with prompting turned on
-ssh-add -c ${KEYFILE}
