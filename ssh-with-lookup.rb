@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 require 'yaml'
 
-SERVERS = YAML::load_file(File.join(ENV['HOME'], "/etc/ssh-with-lookup.yml"))
+SERVERS = YAML::load_file(File.join(ENV['HOME'], "/etc/ssh-with-lookup.yml"), aliases: true)
 
 target    = ARGV.shift
 raise ArgumentError, "usage: ssh-with-lookup.rb <host>.<key> [ssh params ... ]" if target.nil?
