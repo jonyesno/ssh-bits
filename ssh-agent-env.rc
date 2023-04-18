@@ -2,6 +2,8 @@
 # or recover the existing agent if it exists
 # the agent's details live in ~/.ssh/.ssh-agent-$keyname
 
+# shellcheck shell=bash
+
 new_agent() {
     if [ -z "$1" ] ; then
         echo "Usage: new_agent keyname"
@@ -10,7 +12,8 @@ new_agent() {
 
     local KEY=$1
     local FILE=${HOME}/.ssh/.ssh-agent-${KEY}
-    ${HOME}/bin/create-ssh-agent-for-key.sh ${KEY} && . ${FILE}
+    # shellcheck disable=1090
+    "${HOME}/bin/create-ssh-agent-for-key.sh" "${KEY}" && . "${FILE}"
 }
 
 load_agent_env() {
@@ -21,16 +24,16 @@ load_agent_env() {
 
     local KEY=$1
 
-    test_agent_env ${KEY}
+    test_agent_env "${KEY}"
     local _what=$?
 
     if [ ${_what} -eq 1 ] ; then
         # no agent - create, load keys
-        new_agent $1
-        ${HOME}/bin/load-key.sh ${KEY}
+        new_agent "$1"
+        "${HOME}/bin/load-key.sh" "${KEY}"
     elif [ ${_what} -eq 2 ] ; then
         # agent exists but no keys
-        ${HOME}/bin/load-key.sh ${KEY}
+        "${HOME}/bin/load-key.sh" "${KEY}"
     fi
 
 }
@@ -44,10 +47,11 @@ test_agent_env() {
     local KEY=$1
     local FILE=${HOME}/.ssh/.ssh-agent-${KEY}
 
-    if [ -f ${FILE} ] ; then
+    if [ -f "${FILE}" ] ; then
         echo "found ${FILE} for ${KEY}, loading"
-        . ${FILE}
-        if ! ps -p ${SSH_AGENT_PID} 2>/dev/null | grep -q ssh-agent ; then
+        # shellcheck disable=1090
+        . "${FILE}"
+        if ! ps -p "${SSH_AGENT_PID}" 2>/dev/null | grep -q ssh-agent ; then
             echo "Stale agent details for ${KEY}"
             return 1
         fi
@@ -72,11 +76,12 @@ kill_agent() {
     local KEY=$1
     local FILE=${HOME}/.ssh/.ssh-agent-${KEY}
 
-    if [ -f ${FILE} ] ; then
+    if [ -f "${FILE}" ] ; then
         echo "Found ${FILE} for ${KEY}, cleaning up"
-        . ${FILE}
-        kill ${SSH_AGENT_PID}
-        rm ${FILE}
+        # shellcheck disable=1090
+        . "${FILE}"
+        kill "${SSH_AGENT_PID}"
+        rm "${FILE}"
     else
         echo "No agent details found for ${KEY}"
     fi
