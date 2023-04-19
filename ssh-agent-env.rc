@@ -89,6 +89,6 @@ kill_agent() {
 
 alias la=load_agent_env
 alias xsh='ssh-with-lookup'
-alias xcp='ssh-with-lookup'
+alias xcp='scp-with-lookup'
 
 # vim: ft=sh

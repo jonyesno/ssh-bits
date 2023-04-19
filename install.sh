@@ -24,3 +24,5 @@ for target in ${TARGETS} ; do
 	ls -l "${HOME}/bin/${target}"
 done
 
+ln -nsf "${DIR}/ssh-with-lookup" "${HOME}/bin/scp-with-lookup"
+ls -l "${HOME}/bin/scp-with-lookup"

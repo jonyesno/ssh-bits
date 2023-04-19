@@ -22,12 +22,11 @@ elsif conf.has_key?('host-suffix') # for defaulting hosts, append the key-wide h
   conf['host'] = host + ".#{conf['host-suffix']}"
 end
 raise ArgumentError, "unknown host" unless conf.has_key?('host')
+conf['options'] ||= ''
 
 # if `-l <user>` was on the commandline, move it to conf['options']
 if user_opt = rest[/-l\s*\w+/]
   rest.gsub!(user_opt, '')
-
-  conf['options'] ||= ''
   conf['options'].gsub!(/-l\s*\w+/, '')
   conf['options'] += user_opt
 end
@@ -53,15 +52,14 @@ when $0.match(/ssh/)
   system("tmux rename-window -t #{ENV['TMUX_PANE']} #{host}") if ENV.has_key?('TMUX')
 when $0.match(/scp/)
   # sigh, why would they use the same flags
-  conf['options'].gsub(/-l\s*/, '-oUser=')
+  conf['options'].gsub!(/-l\s*/, '-oUser=')
+  conf['options'].gsub!(/-A/, '')
+  conf['options'].gsub!(/-p/, '-P')
 
-  opts.gsub!(/-A/, '')
-  opts.gsub!(/-p/, '-P')
-  rest.gsub!(/:/, "#{user}#{conf['host']}:")
-
-  cmd = "scp #{opts} #{rest}"
+  rest.gsub!(/:/, "#{conf['host']}:")
+  cmd = "scp #{conf['options']} #{rest}"
 end
 
 ENV['SSH_ASKPASS'] = ENV['HOME'] + '/bin/ssh-askpass'
-STDERR.puts "#{$0}: #{cmd}"
+STDERR.puts cmd
 exec cmd
