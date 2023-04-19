@@ -1,2 +1,2 @@
 #!/bin/sh
-touch ${HOME}/tmp/ssh-agent-auth
+touch "${HOME}/tmp/ssh-agent-auth"
