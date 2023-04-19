@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# to make `ssh-add` read a passphrase we have to set `SSH_ASKPASS` to this
+# `cat` etc don't work
+
+read PASS
+echo ${PASS}
