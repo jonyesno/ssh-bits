@@ -40,7 +40,7 @@ fi
 
 # loop over a sleep whilst waiting to see if the 'other' file
 # has been updated
-reattach-to-user-namespace terminal-notifier -title SSH -subtitle "Allow use of ssh-agent?" -group ssh-askpass -message "${FN}" -sound Tink -execute "${HOME}/bin/ssh-agent-auth.sh" >/dev/null 2>&1
+reattach-to-user-namespace terminal-notifier -title SSH -subtitle "Allow use of ssh-agent?" -group ssh-askpass -message "${FN}" -sound Tink -execute "${HOME}/bin/ssh-agent-auth" >/dev/null 2>&1
 # shellcheck disable=3013
 while [ "${ME}" -nt "${IT}" ] ; do
   sleep 0.5

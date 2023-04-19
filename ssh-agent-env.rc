@@ -13,7 +13,7 @@ new_agent() {
     local KEY=$1
     local FILE=${HOME}/.ssh/.ssh-agent-${KEY}
     # shellcheck disable=1090
-    "${HOME}/bin/create-ssh-agent-for-key.sh" "${KEY}" && . "${FILE}"
+    "${HOME}/bin/create-ssh-agent-for-key" "${KEY}" && . "${FILE}"
 }
 
 load_agent_env() {
@@ -30,10 +30,10 @@ load_agent_env() {
     if [ ${_what} -eq 1 ] ; then
         # no agent - create, load keys
         new_agent "$1"
-        "${HOME}/bin/load-key.sh" "${KEY}"
+        "${HOME}/bin/load-key" "${KEY}"
     elif [ ${_what} -eq 2 ] ; then
         # agent exists but no keys
-        "${HOME}/bin/load-key.sh" "${KEY}"
+        "${HOME}/bin/load-key" "${KEY}"
     fi
 
 }
@@ -88,7 +88,7 @@ kill_agent() {
 }
 
 alias la=load_agent_env
-alias xsh='ssh-with-lookup.rb'
-alias xcp='scp-with-lookup.rb'
+alias xsh='ssh-with-lookup'
+alias xcp='ssh-with-lookup'
 
 # vim: ft=sh

@@ -4,7 +4,7 @@ AGENT=$1
 
 unyolo() {
   notify "unyolo ${AGENT}" || true
-  ssh-undefeat.sh "${AGENT}" || true
+  ssh-undefeat "${AGENT}" || true
 }
 trap unyolo ERR EXIT
 
@@ -18,6 +18,6 @@ if [ -z "${AGENT}" ] ; then
 fi
 
 notify "yolo ${AGENT}"
-ssh-defeat.sh "$1"
+ssh-defeat "$1"
 sleep 600
 # ssh-undefeat via exit handler

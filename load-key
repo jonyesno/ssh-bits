@@ -2,10 +2,8 @@
 
 if [ -z "$1" ] ; then echo "usage: load-key keyname" ; exit 1 ; fi
 
-# /Volumes/key is a cryptofs mount
 KEYSTORE=/Volumes/key/ssh
-KEYFILE="${KEYSTORE}/id_???-$1"
-echo "$KEYFILE"
+KEYFILE=$( find "${KEYSTORE}/" -name "id_*-$1" | head -1)
 FILE="${HOME}/.ssh/.ssh-agent-$1"
 
 if [ ! -f "${FILE}" ] ; then echo "no agent environment at ${FILE}" ; exit 1 ; fi
@@ -18,5 +16,6 @@ if [ ! -f "${KEYFILE}" ] ; then echo "no key at ${KEYFILE}" ; exit 1; fi
 if [ -z "${USE_STDIN}" ] ; then
   ssh-add -c "${KEYFILE}"
 else
-  SSH_ASKPASS=/bin/cat SSH_ASKPASS_REQUIRE=force setsid -w ssh-add -c "${KEYFILE}"
+  set -x
+  SSH_ASKPASS=ssh-agent-loader SSH_ASKPASS_REQUIRE=force setsid -w ssh-add -c "${KEYFILE}"
 fi

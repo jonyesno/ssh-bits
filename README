@@ -27,9 +27,9 @@ Shells source ssh-agent-env.rc in their profile. This defines two functions:
 1. load_agent_env
 
   For a named key, this will either create a new agent for it, loading the
-  key as it goes, or merely recover the environment of an existing agent. 
+  key as it goes, or merely recover the environment of an existing agent.
 
-  The create/load work is pushed to a script, create-ssh-agent-for-key.sh
+  The create/load work is pushed to a script, create-ssh-agent-for-key
 
 2. kill_agent
 
@@ -40,11 +40,11 @@ Shells source ssh-agent-env.rc in their profile. This defines two functions:
 
 The main scripts are:
 
-1. create-ssh-agent-for-key.sh
+1. create-ssh-agent-for-key
 
   This script goes off to look for a SSH key whose path is derived from its
   name.  For me, this is /Volumes/key/ssh/id_dsa-${KEYNAME}.
-   
+
   It then creates a new SSH agent and stores its environment details in a
   dotfile specific to this key, ~/.ssh/.ssh-agent-${KEYNAME}.
 
@@ -53,7 +53,7 @@ The main scripts are:
   along. Keys that want such behaviour are then loaded into the agent with
   ssh-add -c.
 
-2. ssh-askpass.sh
+2. ssh-askpass
 
   This is the program run by ssh-agent when it's asked to provide a key. It
   alerts the user to an incoming agent request and waits for confirmation.
@@ -65,15 +65,15 @@ The main scripts are:
   The script exits zero to indicate confirmation, or non-zero to decline the
   request.
 
-3. ssh-agent-auth.sh
+3. ssh-agent-auth
 
   This is other side of the confirmation process. The script merely update the
-  timestamp of one of the files ssh-askpass.sh is looking at. Typically it's run
+  timestamp of one of the files ssh-askpass is looking at. Typically it's run
   by a keyboard shortcut.
 
-4. ssh-decline.sh
+4. ssh-decline
 
-  This script drops a file marker to indicate to ssh-askpass.sh that its should
+  This script drops a file marker to indicate to ssh-askpass that its should
   not agree to the agent request. Again, can be run from a keyboard shortcut.
 
 5. ssh-with-lookup.rb
@@ -82,12 +82,12 @@ The main scripts are:
   for the key's agent and providing a mechanism to fully qualify a hostname
   based on defaults and overrides.
 
-6. clear-agent.sh
+6. clear-agent
 
   Removes the dotfiles relating to managed agents and any timestamp files. It
   doesn't actually kill the agents. It probably should.
 
-7. ssh-defeat.sh
+7. ssh-defeat
 
   Drop off a marker file that disables confirmation prompting for a given key.
 
@@ -105,20 +105,20 @@ Quick demo to unabstractificate this stuff:
   $ load_agent_env lemon-zomo
   No agent loaded for lemon-zomo
   Agent pid 23919
-  Enter passphrase for /Volumes/key/ssh/id_dsa-lemon-zomo: 
+  Enter passphrase for /Volumes/key/ssh/id_dsa-lemon-zomo:
   Identity added: /Volumes/key/ssh/id_dsa-lemon-zomo (/Volumes/key/ssh/id_dsa-lemon-zomo)
   The user has to confirm each use of the key
   Agent pid 23919
-  
+
   $ ssh-add -l
   1024 5d:b9:a6:ca:00:01:f2:f4:93:18:83:da:85:b2:a1:7e /Volumes/key/ssh/id_dsa-lemon-zomo (DSA)
-  
+
 2. Create another agent for another key, using the shell alias la:
 
   $ la 732
   No agent loaded for 732
   Agent pid 25129
-  Enter passphrase for /Volumes/key/ssh/id_dsa-732: 
+  Enter passphrase for /Volumes/key/ssh/id_dsa-732:
   Identity added: /Volumes/key/ssh/id_dsa-732 (/Volumes/key/ssh/id_dsa-732)
   The user has to confirm each use of the key
   Agent pid 25129
@@ -132,7 +132,7 @@ Quick demo to unabstractificate this stuff:
   The agent has no identities. # This is OS X's default agent
 
   $ xsh hq.zomo
-  ssh -l lemon hq.zomo.co.uk 
+  ssh -l lemon hq.zomo.co.uk
   Last login: Wed Aug 11 13:12:33 2010 from somewhere.example.com
 
 Various things now happen:
@@ -140,10 +140,10 @@ Various things now happen:
   . ssh-with-lookup.rb recovered the agent details
   . it appended the zomo.co.uk domain and user account switch and invoked ssh
   . the agent was asked to key the connection
-  . the agent ran ssh-askpass.sh 
-  . ssh-askpass.sh didn't exit until I confirmed it
-  . which I did by pressing a keyboard shortcut that ran ssh-agent-auth.sh
-  
+  . the agent ran ssh-askpass
+  . ssh-askpass didn't exit until I confirmed it
+  . which I did by pressing a keyboard shortcut that ran ssh-agent-auth
+
 * Disclaimer and warranty
 
 As suggested this is all quick and dirty hacks. No claims made about its
