@@ -16,6 +16,5 @@ if [ ! -f "${KEYFILE}" ] ; then echo "no key at ${KEYFILE}" ; exit 1; fi
 if [ -z "${USE_STDIN}" ] ; then
   ssh-add -c "${KEYFILE}"
 else
-  set -x
   SSH_ASKPASS=ssh-agent-loader SSH_ASKPASS_REQUIRE=force setsid -w ssh-add -c "${KEYFILE}"
 fi
