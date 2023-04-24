@@ -28,7 +28,7 @@ conf['options'] ||= ''
 if user_opt = rest[/-l\s*\w+/]
   rest.gsub!(user_opt, '')
   conf['options'].gsub!(/-l\s*\w+/, '')
-  conf['options'] += user_opt
+  conf['options'] += " #{user_opt}"
 end
 
 # discover the file containing the ssh-agent details we want
