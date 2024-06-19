@@ -33,7 +33,7 @@ end
 
 # discover the file containing the ssh-agent details we want
 agentenv = ENV['HOME'] + "/.ssh/.ssh-agent-#{conf['key']}"
-raise RuntimeError, "no agent config found at #{agentenv}" unless File.exists?(agentenv)
+raise RuntimeError, "no agent config found at #{agentenv}" unless File.exist?(agentenv)
 
 # set this process's environment from the file's contents
 File.open(agentenv, 'r') do |f|
