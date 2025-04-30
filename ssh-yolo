@@ -18,6 +18,7 @@ if [ -z "${AGENT}" ] ; then
 fi
 
 notify "yolo ${AGENT}"
+ssh-agent-auth
 ssh-defeat "$1"
 sleep 600
 # ssh-undefeat via exit handler
