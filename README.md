@@ -150,8 +150,12 @@ Various things now happen:
   * `ssh-askpass` didn't exit until I confirmed it
   * which I did by pressing a keyboard shortcut that ran `ssh-agent-auth`
 
-# Disclaimer and warranty
+# Disclaimer
 
 As suggested this is all quick and dirty hacks. No claims made about its
 fitness for use, no warranty or anything like that. It may indeed eat children
 and melt ice caps. Good luck.
+
+# License
+
+Relesed under MIT license, see LICENSE. Non-warranty in there too.
