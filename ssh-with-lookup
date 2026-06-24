@@ -24,6 +24,10 @@ end
 raise ArgumentError, "unknown host" unless conf.has_key?('host')
 conf['options'] ||= ''
 
+if ENV['JUMP']
+  conf['options'] = SERVERS['global']['jump']['options'] + " " + conf['options']
+end
+
 # if `-l <user>` was on the commandline, move it to conf['options']
 if user_opt = rest[/-l\s*\w+/]
   rest.gsub!(user_opt, '')
