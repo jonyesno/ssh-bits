@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-AGENT=$1
+AGENT=${1:-}
+MINUTES=${2:-10}
 
 unyolo() {
   notify "unyolo ${AGENT}" || true
@@ -17,8 +18,9 @@ if [ -z "${AGENT}" ] ; then
   exit 1
 fi
 
-notify "yolo ${AGENT}"
+SECONDS=$(( MINUTES * 60 ))
+notify "yolo ${AGENT} (${SECONDS})"
 ssh-agent-auth
 ssh-defeat "$1"
-sleep 600
+sleep ${SECONDS}
 # ssh-undefeat via exit handler
