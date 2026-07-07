@@ -6,6 +6,7 @@ TARGETS="
 	clear-agents
 	create-ssh-agent-for-key
 	load-key
+	load-agent-inline
 	ssh-agent-auth
 	ssh-agent-loader
 	ssh-askpass-decline
@@ -13,7 +14,6 @@ TARGETS="
 	ssh-decline
 	ssh-defeat
 	ssh-undefeat
-	ssh-with-lookup
 	ssh-yolo
 "
 

@@ -35,8 +35,15 @@ Shells source `ssh-agent-env.rc` in their profile. This defines two functions:
 
   Kills the agent of a named key
 
-  It also defines two shell aliases, `la` for `load_agent_env,` and `xsh` for
-  `ssh-with-lookup.` More on that later.
+  It also defines some shell aliases
+    * `la` for `load_agent_env`
+
+  And only if `load-agent-inline` config exists:
+    * `ssh` for `load-agent-inline ssh`
+    * `scp` for `load-agent-inline scp`
+    * `rsync` for `load-agent-inline rsync`
+
+  More on `load-agent-inline` later.
 
 The main scripts are:
 
@@ -76,11 +83,25 @@ The main scripts are:
   This script drops a file marker to indicate to ssh-askpass that its should
   not agree to the agent request. Again, can be run from a keyboard shortcut.
 
-5. `ssh-with-lookup`
+5. `load-agent-inline`
 
-  This script wrappers a SSH invocation, setting up the necessary environment
-  for the key's agent and providing a mechanism to fully qualify a hostname
-  based on defaults and overrides.
+  Python script that looks at the commandline and tries to detect a hostname,
+  and then tries to look that hostname, and its parents, up in config file to
+  determine which agent to load. It then `exec`s the remaining commandline.
+
+  It looks for `~/.config/ssh-bits/agents.json` which is expected to contain
+
+  ```
+    {
+    "domains": {
+        "zikomo.xyz":       "jon-zikomo",
+        "example.com":      "user-example"
+        }
+    }
+  ```
+
+  This loads the `jon-zikomo` key for `foo.bar.zikomo.xyz`, `baz.zikomo.xyz`,
+  `zikomo.xyz` ...
 
 6. `clear-agent`
 
@@ -130,21 +151,49 @@ Quick demo to unabstractificate this stuff:
   256 SHA256:udfgo973l4t00sflfkh/Qg1A1hX6GoxdJxQ94LLCVmn 732 (ED25519)
   ```
 
-3. In a new shell, use `ssh-with-lookup`, via `xsh` shell alias, to SSH somewhere:
+3. In a new shell, use `load-agent-inline` to wrap `ssh` to somewhere:
 
   ```
   $ ssh-add -l
   The agent has no identities. # This is OS X's default agent
 
-  $ xsh hq.zikomo
-  ssh -l jon hq.zikomo.xyz
+  $ lookup-agent-inline ssh --debug ssh hq.zikomo.xyz
+  DEBUG:load-agent-inline:agent: jon-zikomo
+  DEBUG:load-agent-inline:setting SSH_AUTH_SOCK to ...
+  DEBUG:load-agent-inline:setting SSH_AGENT_PID to ...
+  DEBUG:load-agent-inline:exec ssh (ssh hq.zikomo.xyz)
   Last login: Wed Aug 11 13:12:33 2010 from somewhere.example.com
   ```
 
+4. Quality of life
+
+    Alias `lookup-agent-inline` into `ssh`, `scp`, `rsync`:
+
+    ```
+    alias ssh="lookup-agent-line ssh"
+    ...
+    ```
+
+    Additional stunts in `~/.ssh/config` so match directly on the agent-like part of the hostname:
+
+    ```
+    Host *.zikomo
+      Hostname %h.xyz
+    ```
+    
+    Combined:
+
+    ```
+    $ ssh hq.zikomo
+    ```
+
+
+   ``
 Various things now happen:
 
-  * `ssh-with-lookup` recovered the agent details
-  * it appended the `zikomo.xyz` domain and user account switch and invoked `ssh`
+  * `load-agent-inline` determined the hostname needed the `jon-zikomo` agent
+  * it loaded the environment for that agent from the `~/.ssh-agent-jon-zikomo`
+  * it `exec`d the remaining commandline (`ssh
   * the agent was asked to key the connection
   * the agent ran `ssh-askpass`
   * `ssh-askpass` didn't exit until I confirmed it

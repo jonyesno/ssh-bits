@@ -1,8 +1,0 @@
-zikomo:
-    default:
-        options: -A
-        key: jon-zikomo
-        host-suffix: zikomo.xyz
-    noc:
-        options: -l root -A
-        host: noc.zomo.co.uk
