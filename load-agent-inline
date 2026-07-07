@@ -1,0 +1,74 @@
+#!/usr/bin/env python3
+
+import argparse
+import collections
+import json
+import logging
+import os
+import re
+import shutil
+
+logger = logging.getLogger("load-agent-inline")
+
+home = os.environ.get("HOME")
+xdg_config_home = os.environ.get("XDG_CONFIG_HOME", f"{home}/.config")
+config_file = f"{xdg_config_home}/ssh-bits/agents.json"
+
+def is_subdomain(hostname: str, domain: str) -> bool:
+    """Determine if hostname is a subdomain of domain."""
+    host_parts = collections.deque(hostname.split("."))
+    while host_parts:
+        if domain == ".".join(host_parts):
+            return True
+        host_parts.popleft()
+    return False
+
+def find_agent(args: list, config: dict) -> str:
+    """Examine each arg for hostname-looking items and find the related agent."""
+    agent = None
+    for arg in args:
+        if m := re.match(r"\b([a-z0-9.]+)\b", arg):
+            hostname = m.group(1)
+            for domain in config:
+                if is_subdomain(hostname, domain):
+                    agent = config.get(domain)
+    return agent
+
+def main() -> None:
+    """Run argv with an ssh agent loaded."""
+    logging.basicConfig(level=logging.INFO)
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--debug",
+                        help="set log level to DEBUG",
+                        dest="debug",
+                        action="store_true")
+    args, remaining = parser.parse_known_args()
+    if args.debug:
+        logging.getLogger().setLevel(logging.DEBUG)
+
+    agent = None
+    with open(config_file) as f:
+        config = json.load(f)
+
+    args = remaining
+    agent = find_agent(args, config["domains"])
+
+    if agent:
+        logger.debug("agent: %s", agent)
+        agentenv = f"{home}/.ssh/.ssh-agent-{agent}"
+        with open(agentenv) as f:
+            for line in f:
+                if re.match(r"^SSH", line):
+                    var, val = line.split(";")[0].split("=")
+
+                logger.debug("setting %s to %s", var, val)
+                os.environ[var] = val
+    else:
+        logger.debug("no agent found for this commandline")
+
+    logger.debug("exec %s (%s)", args[0], " ".join(args))
+    os.execv(shutil.which(args[0]), args)
+
+if __name__ == "__main__":
+    main()
