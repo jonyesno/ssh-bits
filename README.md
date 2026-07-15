@@ -174,17 +174,15 @@ Quick demo to unabstractificate this stuff:
     ...
     ```
 
-    Additional stunts in `~/.ssh/config` so match directly on the agent-like part of the hostname:
+    Define domain rewrites in `agents.json`:
+    ```
+    "rewrites": {
+        "zik": "zikomo.xyz"
+    }
+    ```
 
     ```
-    Host *.zikomo
-      Hostname %h.xyz
-    ```
-    
-    Combined:
-
-    ```
-    $ ssh hq.zikomo
+    $ ssh hq.zik
     ```
 
 

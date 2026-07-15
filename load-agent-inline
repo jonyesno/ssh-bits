@@ -27,12 +27,30 @@ def find_agent(args: list, config: dict) -> str:
     """Examine each arg for hostname-looking items and find the related agent."""
     agent = None
     for arg in args:
-        if m := re.match(r"\b([a-z0-9.]+)\b", arg):
+        logger.debug(f"arg: {arg}")
+        if m := re.match(r"\b([a-z0-9.-]+)\b", arg):
             hostname = m.group(1)
+            logger.debug(f"hostname {hostname}")
             for domain in config:
+                logger.debug(f"domain {domain}")
                 if is_subdomain(hostname, domain):
+                    logger.debug("match")
                     agent = config.get(domain)
     return agent
+
+def rewrite_domain(args: list, rewrites: dict) -> list:
+    """Examine each arg for shorthand domain names and expand them."""
+    rewritten = []
+    for arg in args:
+        for rewrite, target in rewrites.items():
+            r = r"(" + re.escape(rewrite) + r")"
+            if m := re.search(r, arg):
+                logger.debug(f"rewrite {m.group(1)} -> {target}")
+                arg = re.sub(m.group(1), target, arg)
+        rewritten.append(arg)
+
+    logger.debug(rewritten)
+    return rewritten
 
 def main() -> None:
     """Run argv with an ssh agent loaded."""
@@ -51,7 +69,7 @@ def main() -> None:
     with open(config_file) as f:
         config = json.load(f)
 
-    args = remaining
+    args =  rewrite_domain(remaining, config["rewrites"])
     agent = find_agent(args, config["domains"])
 
     if agent:
