@@ -40,18 +40,19 @@ def find_agent(args: list, config: dict) -> str:
 
 def rewrite_domain(args: list, rewrites: dict) -> list:
     """Examine each arg for shorthand domain names and expand them."""
+    patterns = [
+        (re.compile(r"(?<![\w-])" + re.escape(rewrite) + r"(?=$|[^\w.-])"), target)
+        for rewrite, target in rewrites.items()
+    ]
     rewritten = []
     for arg in args:
         new = arg
-        for rewrite, target in rewrites.items():
-            r = r"(?<=.)?(" + re.escape(rewrite) + r")$"
-            logger.debug(f"rewrite_domain {arg} {rewrite} {target} {r}")
-            if m := re.search(r, arg):
-                new = re.sub(r, target, arg)
+        for pattern, target in patterns:
+            new = pattern.sub(target, new)
         rewritten.append(new)
-
     logger.debug(rewritten)
     return rewritten
+
 
 def main() -> None:
     """Run argv with an ssh agent loaded."""
