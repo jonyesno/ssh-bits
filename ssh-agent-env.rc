@@ -89,7 +89,7 @@ kill_agent() {
 
 alias la=load_agent_env
 
-if [[ -f "${XDG_CONFIG_HOME:-~/.config}/ssh-bits/agents.json" ]] ; then
+if [[ -f "${XDG_CONFIG_HOME:-${HOME}/.config}/ssh-bits/agents.json" ]] ; then
     alias xsh="load-agent-inline ssh"
     alias xcp="load-agent-inline scp"
     alias rsync="load-agent-inline rsync"
